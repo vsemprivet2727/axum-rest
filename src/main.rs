@@ -13,27 +13,13 @@ async fn main() -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-fn create_router(pool: SqlitePool) -> Router {
+pub fn create_router(pool: SqlitePool) -> Router {
     items::routes(pool)
 }
 
-async fn create_pool(max_conn: u32, connect_str: &str) -> Result<SqlitePool, sqlx::Error> {
-    sqlx::sqlite::SqlitePoolOptions::new()
+pub async fn create_pool(max_conn: u32, connect_str: &str) -> Result<SqlitePool, sqlx::Error> {
+    sqlite::SqlitePoolOptions::new()
         .max_connections(max_conn)
         .connect(&connect_str)
         .await
-}
-
-#[tokio::test]
-async fn test_query() -> Result<(), sqlx::Error> {
-    let pool = create_pool(1, "sqlite::memory:").await?;
-    query(
-        "CREATE TABLE items_test ( \
-        id INTEGER PRIMARY KEY AUTOINCREMENT,\
-        name TEXT,\
-        price INTEGER);",
-    )
-    .execute(&pool)
-    .await?;
-    Ok(())
 }
